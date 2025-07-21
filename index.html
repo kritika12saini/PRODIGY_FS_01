@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Authentication System</title>
+    <style>
+        :root {
+            --primary: #3182ce;
+            --primary-hover: #2c5282;
+            --success: #48bb78;
+            --danger: #e53e3e;
+            --gray: #718096;
+            --light-gray: #e2e8f0;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f7fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray);
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .auth-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+
+        .auth-forms {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .form-container {
+            background-color: var(--white);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-title {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .error-message {
+            color: var(--danger);
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        footer {
+            background-color: var(--white);
+            padding: 1rem;
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.875rem;
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard {
+            background-color: var(--white);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+
+        .dashboard h1 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .user-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: var(--light-gray);
+            border-radius: 0.25rem;
+        }
+
+        .password-requirements {
+            margin-top: 1rem;
+            padding-left: 1.25rem;
+            color: var(--gray);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .auth-forms {
+                flex-direction: column;
+            }
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">SecureAuth</div>
+        <div class="nav-links">
+            <a href="#" id="homeLink">Home</a>
+            <a href="#" id="loginLink">Login</a>
+            <a href="#" id="registerLink">Register</a>
+            <a href="#" id="dashboardLink" style="display: none;">Dashboard</a>
+            <a href="#" id="logoutLink" style="display: none;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="auth-container">
+        <div id="homeView">
+            <div class="dashboard">
+                <h1>Welcome to Secure Authentication System</h1>
+                <p>This system provides secure user authentication with robust security measures including password hashing, session management, and protected routes.</p>
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f242ca10-b5f1-41de-8d4c-d72876116f6e.png" alt="Illustration of a secure lock icon with a shield background representing authentication security" />
+            </div>
+        </div>
+
+        <div id="authView" style="display: none;">
+            <div class="auth-forms">
+                <div class="form-container" id="loginForm">
+                    <h2 class="form-title">Login</h2>
+                    <form id="loginFormElement">
+                        <div class="form-group">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                        <div id="loginError" class="error-message"></div>
+                    </form>
+                </div>
+
+                <div class="form-container" id="registerForm">
+                    <h2 class="form-title">Register</h2>
+                    <form id="registerFormElement">
+                        <div class="form-group">
+                            <label for="registerName">Full Name</label>
+                            <input type="text" id="registerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Email</label>
+                            <input type="email" id="registerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <input type="password" id="registerPassword" required>
+                            <div class="password-requirements">
+                                <p>Password requirements:</p>
+                                <ul>
+                                    <li>Minimum 8 characters</li>
+                                    <li>At least 1 uppercase letter</li>
+                                    <li>At least 1 number</li>
+                                    <li>At least 1 special character</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerConfirmPassword">Confirm Password</label>
+                            <input type="password" id="registerConfirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        <div id="registerError" class="error-message"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboardView" style="display: none;">
+            <div class="dashboard">
+                <h1>Welcome to Your Dashboard</h1>
+                <p>This is a protected route that only authenticated users can access.</p>
+                <div class="user-info">
+                    <h3>User Information</h3>
+                    <p id="userName"></p>
+                    <p id="userEmail"></p>
+                    <p id="userRole"></p>
+                </div>
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/44d6a156-93e9-4fda-a010-2fc0bcca69e1.png" alt="Illustration of a digital dashboard with charts and metrics representing user data" />
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Secure Authentication System © 2023. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // User database (in a real app, this would be a backend database)
+        const usersDB = JSON.parse(localStorage.getItem('users')) || [];
+        
+        // Session management
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+        // DOM Elements
+        const homeView = document.getElementById('homeView');
+        const authView = document.getElementById('authView');
+        const dashboardView = document.getElementById('dashboardView');
+        
+        const loginLink = document.getElementById('loginLink');
+        const registerLink = document.getElementById('registerLink');
+        const dashboardLink = document.getElementById('dashboardLink');
+        const logoutLink = document.getElementById('logoutLink');
+        const homeLink = document.getElementById('homeLink');
+
+        // Forms
+        const loginFormElement = document.getElementById('loginFormElement');
+        const registerFormElement = document.getElementById('registerFormElement');
+
+        // Error messages
+        const loginError = document.getElementById('loginError');
+        const registerError = document.getElementById('registerError');
+
+        // User info display
+        const userNameElement = document.getElementById('userName');
+        const userEmailElement = document.getElementById('userEmail');
+        const userRoleElement = document.getElementById('userRole');
+
+        // Initialize the app
+        function init() {
+            updateUI();
+            setupEventListeners();
+        }
+
+        // Update UI based on authentication state
+        function updateUI() {
+            if (currentUser) {
+                // User is logged in
+                homeView.style.display = 'none';
+                authView.style.display = 'none';
+                dashboardView.style.display = 'block';
+                
+                loginLink.style.display = 'none';
+                registerLink.style.display = 'none';
+                dashboardLink.style.display = 'block';
+                logoutLink.style.display = 'block';
+
+                // Update user info in dashboard
+                userNameElement.textContent = `Name: ${currentUser.name}`;
+                userEmailElement.textContent = `Email: ${currentUser.email}`;
+                userRoleElement.textContent = `Role: ${currentUser.role || 'User'}`;
+            } else {
+                // User is logged out
+                homeView.style.display = 'block';
+                authView.style.display = 'none';
+                dashboardView.style.display = 'none';
+                
+                loginLink.style.display = 'block';
+                registerLink.style.display = 'block';
+                dashboardLink.style.display = 'none';
+                logoutLink.style.display = 'none';
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Navigation links
+            homeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                homeView.style.display = 'block';
+                authView.style.display = 'none';
+                dashboardView.style.display = 'none';
+            });
+
+            loginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                homeView.style.display = 'none';
+                authView.style.display = 'block';
+                dashboardView.style.display = 'none';
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'block';
+            });
+
+            registerLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                homeView.style.display = 'none';
+                authView.style.display = 'block';
+                dashboardView.style.display = 'none';
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+            });
+
+            dashboardLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                homeView.style.display = 'none';
+                authView.style.display = 'none';
+                dashboardView.style.display = 'block';
+            });
+
+            logoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                logout();
+            });
+
+            // Form submissions
+            loginFormElement.addEventListener('submit', handleLogin);
+            registerFormElement.addEventListener('submit', handleRegister);
+        }
+
+        // Hash password (simplified implementation - in a real app, use bcrypt or similar)
+        function hashPassword(password) {
+            // Note: This is a simplified hashing function for demo purposes
+            // In a real application, use a proper hashing algorithm like bcrypt
+            let hash = 0;
+            for (let i = 0; i < password.length; i++) {
+                const char = password.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return hash.toString();
+        }
+
+        // Validate password strength
+        function validatePassword(password) {
+            const minLength = 8;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasNumber = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+            return password.length >= minLength && hasUpperCase && hasNumber && hasSpecialChar;
+        }
+
+        // Handle login
+        function handleLogin(e) {
+            e.preventDefault();
+            loginError.textContent = '';
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Find user in database
+            const user = usersDB.find(u => u.email === email && u.password === hashPassword(password));
+
+            if (user) {
+                // Successful login
+                currentUser = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role || 'User'
+                };
+
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Redirect to dashboard
+                updateUI();
+            } else {
+                loginError.textContent = 'Invalid email or password';
+            }
+        }
+
+        // Handle registration
+        function handleRegister(e) {
+            e.preventDefault();
+            registerError.textContent = '';
+
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+            // Validate inputs
+            if (password !== confirmPassword) {
+                registerError.textContent = 'Passwords do not match';
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                registerError.textContent = 'Password does not meet requirements';
+                return;
+            }
+
+            // Check if user already exists
+            const userExists = usersDB.some(u => u.email === email);
+            if (userExists) {
+                registerError.textContent = 'User with this email already exists';
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                id: Date.now().toString(),
+                name,
+                email,
+                password: hashPassword(password),
+                role: 'User'
+            };
+
+            // Add to database
+            usersDB.push(newUser);
+            localStorage.setItem('users', JSON.stringify(usersDB));
+
+            // Automatically log in the new user
+            currentUser = {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Redirect to dashboard
+            updateUI();
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUI();
+        }
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
+
